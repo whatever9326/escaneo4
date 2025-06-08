@@ -183,12 +183,14 @@ document.getElementById("barcodeInput").addEventListener("keypress", function (e
       const cantidad = parseInt(document.getElementById("multiplicador").value) || 1;
       producto.escaneados += cantidad;
       const okAudio = document.getElementById("sonido-ok");
+      okAudio.pause();
       okAudio.currentTime = 0;
-      okAudio.play();
+      okAudio.play().catch(e => console.warn("No se pudo reproducir ok.mp3:", e));
     } else {
       const errorAudio = document.getElementById("sonido-error");
+      errorAudio.pause();
       errorAudio.currentTime = 0;
-      errorAudio.play();
+      errorAudio.play().catch(e => console.warn("No se pudo reproducir error.mp3:", e));
       mostrarMensaje("Código no encontrado");
     }
     mostrarPedido();
@@ -198,7 +200,7 @@ document.getElementById("barcodeInput").addEventListener("keypress", function (e
 function exportarResumen() {
   if (!pedidoActual) return;
   const filas = pedidoActual.map(p => [p.codigo, p.descripcion, p.cantidad, p.escaneados]);
- const csv = ["CODIGO,DESCRIPCION,CANTIDAD,ESCANEADOS"].concat(filas.map(f => f.join(","))).join("\n");
+  const csv = ["CODIGO,DESCRIPCION,CANTIDAD,ESCANEADOS"].concat(filas.map(f => f.join(","))).join("\n");
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
